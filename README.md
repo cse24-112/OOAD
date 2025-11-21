@@ -28,8 +28,3 @@ Key Features
 - Models reflect iterative refinement from analysis to design  
 - Java components are aligned with object-oriented principles and system requirements
 
-
-
----
-
-Please explore each folder for detailed documentation and modeling artifacts. For any queries, refer to the assignment brief or contact the author.
