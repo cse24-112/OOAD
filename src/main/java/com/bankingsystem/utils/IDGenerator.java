@@ -3,6 +3,7 @@ package com.bankingsystem.utils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Utility class for generating unique IDs and account numbers.
@@ -83,6 +84,15 @@ public class IDGenerator {
      */
     public static String generateRequestID() {
         return "REQ" + (1000 + accountCounter.get());
+    }
+
+    /**
+     * Generate a 9-digit national ID (numeric string). Leading zeros avoided.
+     * @return 9-digit national ID string
+     */
+    public static String generateNationalId() {
+        int n = ThreadLocalRandom.current().nextInt(100_000_000, 1_000_000_000);
+        return String.format("%09d", n);
     }
 
     /**

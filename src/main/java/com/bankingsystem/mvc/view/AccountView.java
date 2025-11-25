@@ -6,10 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 public class AccountView extends VBox {
-    private final Account account;
 
     public AccountView(Account account) {
-        this.account = account;
         setPadding(new Insets(12));
         setSpacing(8);
         Label num = new Label("Account: " + account.getAccountNumber());

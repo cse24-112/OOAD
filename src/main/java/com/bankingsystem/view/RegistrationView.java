@@ -111,10 +111,10 @@ public class RegistrationView extends VBox {
             String bdet = businessDetails.getText();
             String dirs = directors.getText();
             String signs = signatories.getText();
-            javafx.scene.control.ChoiceBox industryBox = (javafx.scene.control.ChoiceBox) this.lookup("#industryBox");
-            javafx.scene.control.ChoiceBox employeesBox = (javafx.scene.control.ChoiceBox) this.lookup("#employeesBox");
-            javafx.scene.control.ChoiceBox revenueBox = (javafx.scene.control.ChoiceBox) this.lookup("#revenueBox");
-            javafx.scene.control.ChoiceBox yearsBox = (javafx.scene.control.ChoiceBox) this.lookup("#yearsBox");
+            javafx.scene.control.ChoiceBox<String> industryBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#industryBox");
+            javafx.scene.control.ChoiceBox<String> employeesBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#employeesBox");
+            javafx.scene.control.ChoiceBox<String> revenueBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#revenueBox");
+            javafx.scene.control.ChoiceBox<String> yearsBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#yearsBox");
             String industry = industryBox == null ? "Other" : String.valueOf(industryBox.getValue());
             String employeesRange = employeesBox == null ? "1-10" : String.valueOf(employeesBox.getValue());
             String revenueRange = revenueBox == null ? "<50k" : String.valueOf(revenueBox.getValue());

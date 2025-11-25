@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 /**
  * View for displaying transaction history.
@@ -69,7 +70,7 @@ public class TransactionHistoryView extends VBox {
         descriptionCol.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
         descriptionCol.setPrefWidth(200);
 
-        transactionTable.getColumns().addAll(dateCol, typeCol, amountCol, balanceCol, descriptionCol);
+        transactionTable.getColumns().addAll(Arrays.asList(dateCol, typeCol, amountCol, balanceCol, descriptionCol));
         transactionTable.setPrefHeight(400);
 
         // Buttons

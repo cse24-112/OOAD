@@ -11,24 +11,82 @@ public abstract class Account {
     protected LocalDate dateOpened;
     protected Customer owner;
     protected java.util.List<Transaction> transactions = new java.util.ArrayList<>();
+    protected AccountStatus status = AccountStatus.PENDING;
+    protected java.time.LocalDateTime approvalDateTime;
+    protected String approvalStaffUsername;
+    protected boolean showApprovalNotification = false;
 
     public Account(Customer owner, String branch) {
-        this.accountNumber = generateAccountNumber();
+        this.accountNumber = null; // Will be assigned upon approval
         this.branch = branch;
         this.balance = 0.0;
         this.dateOpened = LocalDate.now();
         this.owner = owner;
+        this.status = AccountStatus.PENDING;
     }
 
     /**
      * Generate account number using IDGenerator utility.
      * Subclasses can override to specify account type.
+     * This is called during account approval, not during creation.
      */
     protected String generateAccountNumber() {
         // Default: use generic account type
         // Subclasses should override to specify their type
         return IDGenerator.generateAccountNumber("ACC");
     }
+
+    /**
+     * Approve this account and assign a unique account number.
+     * Should only be called once, by a staff member during approval.
+     * 
+     * @param staffUsername The username of the staff member approving
+     */
+    public void approve(String staffUsername) {
+        if (this.status != AccountStatus.PENDING) {
+            throw new IllegalStateException("Cannot approve non-pending account");
+        }
+        this.status = AccountStatus.APPROVED;
+        this.accountNumber = generateAccountNumber();
+        this.approvalDateTime = java.time.LocalDateTime.now();
+        this.approvalStaffUsername = staffUsername;
+        this.showApprovalNotification = true;
+    }
+
+    /**
+     * Reject this account.
+     * 
+     * @param staffUsername The username of the staff member rejecting
+     */
+    public void reject(String staffUsername) {
+        if (this.status != AccountStatus.PENDING) {
+            throw new IllegalStateException("Cannot reject non-pending account");
+        }
+        this.status = AccountStatus.REJECTED;
+        this.approvalStaffUsername = staffUsername;
+        this.approvalDateTime = java.time.LocalDateTime.now();
+    }
+
+    public AccountStatus getStatus() {
+        return status;
+    }
+
+    public java.time.LocalDateTime getApprovalDateTime() {
+        return approvalDateTime;
+    }
+
+    public String getApprovalStaffUsername() {
+        return approvalStaffUsername;
+    }
+
+    public boolean isShowApprovalNotification() {
+        return showApprovalNotification;
+    }
+
+    public void clearApprovalNotification() {
+        this.showApprovalNotification = false;
+    }
+
 
     public String getAccountNumber() {
         return accountNumber;

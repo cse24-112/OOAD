@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class Bank {
-    private String bankName;
     private String branchCode;
     private List<Customer> customers = new ArrayList<>();
     private List<Account> accounts = new ArrayList<>();
@@ -14,7 +13,6 @@ public class Bank {
     private List<Staff> staff = new ArrayList<>();
 
     public Bank(String bankName, String branchCode) {
-        this.bankName = bankName;
         this.branchCode = branchCode;
         // seed a default staff user for demo
         staff.add(new Staff("staff1", "adminpass"));

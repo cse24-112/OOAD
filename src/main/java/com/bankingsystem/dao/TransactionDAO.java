@@ -3,7 +3,6 @@ package com.bankingsystem.dao;
 import com.bankingsystem.Transaction;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of TransactionDAOInterface.

@@ -61,7 +61,6 @@ public class AccountDAO implements AccountDAOInterface {
         if (account.isPresent()) {
             // In-memory: update the account object
             // In real implementation, this would be a direct SQL update
-            Account acc = account.get();
             // Note: This is a simplified approach. In real implementation,
             // we'd need to update the balance field directly via SQL
             return true;

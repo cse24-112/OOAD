@@ -4,8 +4,6 @@ import com.bankingsystem.utils.IDGenerator;
 
 public class ChequeAccount extends Account implements Withdrawable {
     private EmploymentInfo employmentInfo;
-    private String employerName;
-    private String employerAddress;
     private boolean overdraftAllowed;
 
     public ChequeAccount(Customer owner, String branch, EmploymentInfo employmentInfo, boolean overdraftAllowed) {

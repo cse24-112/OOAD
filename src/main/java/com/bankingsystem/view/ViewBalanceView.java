@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import java.util.Arrays;
 import javafx.scene.text.FontWeight;
 
 /**
@@ -46,7 +47,7 @@ public class ViewBalanceView extends VBox {
         balanceCol.setCellValueFactory(cellData -> cellData.getValue().balanceProperty());
         balanceCol.setPrefWidth(150);
 
-        balanceTable.getColumns().addAll(accountNumberCol, accountTypeCol, balanceCol);
+        balanceTable.getColumns().addAll(Arrays.asList(accountNumberCol, accountTypeCol, balanceCol));
         balanceTable.setPrefHeight(400);
 
         // Populate table

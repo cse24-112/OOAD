@@ -9,7 +9,6 @@ import com.bankingsystem.dao.TransactionDAOInterface;
 import com.bankingsystem.dao.TransactionDAO;
 import com.bankingsystem.utils.ValidationHelper;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller for transaction-related operations.

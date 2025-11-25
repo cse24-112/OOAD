@@ -2,7 +2,6 @@ package com.bankingsystem.controller;
 
 import com.bankingsystem.Bank;
 import com.bankingsystem.Customer;
-import com.bankingsystem.gui.MainApp;
 import com.bankingsystem.view.AccountView;
 import javafx.stage.Stage;
 

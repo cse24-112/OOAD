@@ -3,13 +3,16 @@ package com.bankingsystem;
 import com.bankingsystem.utils.IDGenerator;
 
 public class SavingsAccount extends Account implements PayInterest {
-    private double interestRate; // monthly rate, e.g. 0.0005 for 0.05%
+    private double interestRate; // monthly rate for 4% annual = 0.003333 (0.3333% per month)
     private double minBalance;
+    private static final double ACCOUNT_OPENING_FEE = 50.0; // Pula
 
     public SavingsAccount(Customer owner, String branch, double interestRate, double minBalance) {
         super(owner, branch);
         this.interestRate = interestRate;
         this.minBalance = minBalance;
+        // Immediately charge the account opening fee
+        this.balance = -ACCOUNT_OPENING_FEE;
     }
 
     @Override
@@ -25,7 +28,11 @@ public class SavingsAccount extends Account implements PayInterest {
 
     @Override
     public double calculateInterest() {
-        return balance * interestRate;
+        // Only pay interest if account is approved and balance is positive
+        if (this.status == AccountStatus.APPROVED && balance > 0) {
+            return balance * interestRate;
+        }
+        return 0.0;
     }
 
     public double getInterestRate() {
@@ -35,4 +42,9 @@ public class SavingsAccount extends Account implements PayInterest {
     public double getMinBalance() {
         return minBalance;
     }
+
+    public static double getAccountOpeningFee() {
+        return ACCOUNT_OPENING_FEE;
+    }
 }
+

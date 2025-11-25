@@ -12,14 +12,17 @@ public abstract class Customer {
     protected String email;
     protected String nationalID;
     protected String phone;
+    protected String username;
+    protected String pin;   
     protected List<Account> accounts = new ArrayList<>();
     protected LocalDate createdDate = LocalDate.now();
 
-    public Customer(String customerID, String firstName, String lastName) {
+    public Customer(String customerID, String firstName, String lastName, String pin) {
         this.customerID = customerID;
         this.firstName = firstName;
         this.lastName = lastName;
-    }
+        this.pin = pin; 
+    } 
 
     public String getCustomerID() {
         return customerID;
@@ -69,9 +72,18 @@ public abstract class Customer {
         return nationalID;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
     public void setNationalID(String nationalID) {
         this.nationalID = nationalID;
     }
+ 
 
     /**
      * Authenticate a customer using username/password. Default: not supported.

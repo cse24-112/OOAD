@@ -1,5 +1,6 @@
 package com.bankingsystem;
 
+@SuppressWarnings("unused")
 public class IndividualCustomer extends Customer {
     private String nationalId;
     private java.time.LocalDate dateOfBirth;
@@ -10,9 +11,11 @@ public class IndividualCustomer extends Customer {
     private String nextOfKinContact;
     private String username;
     private String password;
+    private String pin; // PIN for login authentication
 
     public IndividualCustomer(String customerID, String firstName, String lastName, String nationalId) {
-        super(customerID, firstName, lastName);
+        // Customer superclass requires a pin parameter; default to empty string here.
+        super(customerID, firstName, lastName, "");
         this.nationalId = nationalId;
     }
 
@@ -24,12 +27,20 @@ public class IndividualCustomer extends Customer {
         this.password = password;
     }
 
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
     public String getUsername() {
         return username;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getPin() {
+        return pin;
     }
 
     @Override
@@ -44,30 +55,42 @@ public class IndividualCustomer extends Customer {
         return this.username.equals(username) && this.password.equals(password);
     }
 
+    /**
+     * Authenticate using PIN (alternative login method)
+     */
+    public boolean authenticateWithPin(String username, String pin) {
+        if (this.username == null || this.pin == null) return false;
+        return this.username.equals(username) && this.pin.equals(pin);
+    }
+
     public Account openAccount(String type, double initialDeposit) {
-        // Overloaded openAccount behavior depends on type
+        // Accounts now start with PENDING status and null account number
+        // They must be approved by staff to be assigned an account number
         switch (type.toLowerCase()) {
             case "savings":
-                double fee = 50.0;
-                if (initialDeposit < fee) return null; // require fee
-                SavingsAccount sa = new SavingsAccount(this, "MainBranch", 0.0005, 0.0);
-                sa.deposit(initialDeposit - fee);
+                // Savings accounts charge P50 on creation
+                SavingsAccount sa = new SavingsAccount(this, "MainBranch", 0.003333, 0.0); // 4% annual
+                if (initialDeposit > 0) {
+                    sa.deposit(initialDeposit);
+                }
                 addAccount(sa);
                 return sa;
             case "investment":
-                double required = 500.0;
-                if (!InvestmentAccount.meetsOpeningDeposit(initialDeposit, required)) return null;
-                InvestmentAccount ia = new InvestmentAccount(this, "MainBranch", 0.05, required);
-                ia.deposit(initialDeposit);
+                // Investment accounts must have minimum P1000 for approval
+                InvestmentAccount ia = new InvestmentAccount(this, "MainBranch", 0.006667, 1000.0); // 8% annual
+                if (initialDeposit > 0) {
+                    ia.deposit(initialDeposit);
+                }
                 addAccount(ia);
                 return ia;
             case "cheque":
-                // Only allowed if person is working (employerName present)
+                // Cheque accounts only allowed if person is working (employerName present)
                 if (employerName == null || employerName.isBlank()) return null;
                 EmploymentInfo info = new EmploymentInfo(employerName, "unknown", "employee");
-                // do not create directly here: callers should request approval; but allow direct creation if called by bank.staff
                 ChequeAccount ca = new ChequeAccount(this, "MainBranch", info, false);
-                ca.deposit(initialDeposit);
+                if (initialDeposit > 0) {
+                    ca.deposit(initialDeposit);
+                }
                 addAccount(ca);
                 return ca;
             default:
@@ -87,3 +110,4 @@ public class IndividualCustomer extends Customer {
         return nationalId;
     }
 }
+

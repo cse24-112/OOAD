@@ -3,8 +3,9 @@ package com.bankingsystem;
 import com.bankingsystem.utils.IDGenerator;
 
 public class InvestmentAccount extends Account implements PayInterest, Withdrawable {
-    private double interestRate; // monthly rate, e.g. 0.05 for 5%
+    private double interestRate; // monthly rate for 8% annual = 0.006667 (0.6667% per month)
     private double minOpeningDeposit;
+    private static final double MINIMUM_DEPOSIT_REQUIRED = 1000.0; // Pula
 
     public InvestmentAccount(Customer owner, String branch, double interestRate, double minOpeningDeposit) {
         super(owner, branch);
@@ -17,18 +18,32 @@ public class InvestmentAccount extends Account implements PayInterest, Withdrawa
         return IDGenerator.generateAccountNumber("INV");
     }
 
-    @Override
-    public double applyMonthlyInterest() {
-        // Investment accounts pay 5% monthly interest
-        double interest = calculateInterest();
-        if (interest > 0) {
-            recordInterest(interest);
-        }
-        return interest;
-    }
-
+    /**
+     * Check if a proposed initial deposit meets the minimum opening deposit requirement.
+     * Investment accounts must have at least P1000 to be approved.
+     */
     public static boolean meetsOpeningDeposit(double amount, double required) {
         return amount >= required;
+    }
+
+    /**
+     * Verify if this investment account is eligible for approval based on current balance.
+     */
+    public boolean isEligibleForApproval() {
+        return balance >= MINIMUM_DEPOSIT_REQUIRED;
+    }
+
+    @Override
+    public double applyMonthlyInterest() {
+        // Investment accounts pay 8% annual interest (0.6667% monthly) only if approved
+        if (this.status == AccountStatus.APPROVED) {
+            double interest = calculateInterest();
+            if (interest > 0) {
+                recordInterest(interest);
+            }
+            return interest;
+        }
+        return 0.0;
     }
 
     @Override
@@ -44,7 +59,11 @@ public class InvestmentAccount extends Account implements PayInterest, Withdrawa
 
     @Override
     public double calculateInterest() {
-        return balance * interestRate;
+        // Only calculate interest if account is approved
+        if (this.status == AccountStatus.APPROVED) {
+            return balance * interestRate;
+        }
+        return 0.0;
     }
 
     public double getInterestRate() {
@@ -54,4 +73,9 @@ public class InvestmentAccount extends Account implements PayInterest, Withdrawa
     public double getMinOpeningDeposit() {
         return minOpeningDeposit;
     }
+
+    public static double getMinimumDepositRequired() {
+        return MINIMUM_DEPOSIT_REQUIRED;
+    }
 }
+

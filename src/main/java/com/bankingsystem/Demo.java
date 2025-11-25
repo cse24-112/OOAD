@@ -12,11 +12,11 @@ public class Demo {
         bank.registerCustomer(acme);
 
         // Open accounts
-        var s = bank.openAccount(alice, "savings", 1000.0);
-        var i = bank.openAccount(alice, "investment", 1000.0);
-        var c = bank.openAccount(alice, "cheque", 200.0);
+        bank.openAccount(alice, "savings", 1000.0);
+        bank.openAccount(alice, "investment", 1000.0);
+        Account c = bank.openAccount(alice, "cheque", 200.0);
 
-        var cs = bank.openAccount(acme, "savings", 5000.0);
+        bank.openAccount(acme, "savings", 5000.0);
 
         System.out.println("--- Before interest ---");
         for (Account a : bank.getAccounts()) {
@@ -37,10 +37,18 @@ public class Demo {
             System.out.println("Withdraw OK: " + ok + ", balance=" + c.getBalance());
         }
 
-        if (i != null) {
+        // Find investment account and test withdrawal
+        Account investmentAccount = null;
+        for (Account a : bank.getAccounts()) {
+            if (a instanceof InvestmentAccount) {
+                investmentAccount = a;
+                break;
+            }
+        }
+        if (investmentAccount != null) {
             System.out.println("Attempting withdraw 100 from investment account");
-            boolean ok = i.withdraw(100);
-            System.out.println("Withdraw OK: " + ok + ", balance=" + i.getBalance());
+            boolean ok = investmentAccount.withdraw(100);
+            System.out.println("Withdraw OK: " + ok + ", balance=" + investmentAccount.getBalance());
         }
 
         System.out.println("Demo finished");

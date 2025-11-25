@@ -3,13 +3,11 @@ package com.bankingsystem.controller;
 import com.bankingsystem.Account;
 import com.bankingsystem.Bank;
 import com.bankingsystem.Customer;
-import com.bankingsystem.PayInterest;
 import com.bankingsystem.IndividualCustomer;
 import com.bankingsystem.EmploymentInfo;
 import com.bankingsystem.AccountRequest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for account operations. Handles calls from the View and uses the model.

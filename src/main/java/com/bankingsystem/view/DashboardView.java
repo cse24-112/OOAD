@@ -1,6 +1,5 @@
 package com.bankingsystem.view;
 
-import com.bankingsystem.Customer;
 import com.bankingsystem.Account;
 import com.bankingsystem.controller.AccountController;
 import com.bankingsystem.controller.AdminController;
@@ -17,17 +16,14 @@ import javafx.scene.text.FontWeight;
  */
 public class DashboardView extends BorderPane {
     private final Object controller; // Can be AccountController or AdminController
-    private final boolean isStaff;
 
     public DashboardView(AccountController accountController) {
         this.controller = accountController;
-        this.isStaff = false;
         buildCustomerDashboard();
     }
 
     public DashboardView(AdminController adminController) {
         this.controller = adminController;
-        this.isStaff = true;
         buildStaffDashboard();
     }
 
@@ -101,7 +97,6 @@ public class DashboardView extends BorderPane {
     }
 
     private void buildStaffDashboard() {
-        AdminController ac = (AdminController) controller;
         setPadding(new Insets(20));
         
         // Title
@@ -210,7 +205,6 @@ public class DashboardView extends BorderPane {
 
     private void onApplyInterest() {
         if (controller instanceof AdminController) {
-            AdminController ac = (AdminController) controller;
             // Apply interest logic would be in AdminController
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Interest Applied");

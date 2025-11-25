@@ -3,7 +3,6 @@ package com.bankingsystem.controller;
 import com.bankingsystem.Bank;
 import com.bankingsystem.CustomerRegistrationRequest;
 import com.bankingsystem.view.LoginView;
-import com.bankingsystem.view.RegistrationView;
 import java.util.Arrays;
 import javafx.stage.Stage;
 

@@ -60,18 +60,6 @@ public class AdminView extends BorderPane {
         setCenter(custReqList);
     }
 
-    private void refreshHistory() {
-        ListView<String> history = new ListView<>();
-        for (CustomerRegistrationRequest r : controller.listCustomerHistory()) {
-            String who = r.getApprover() == null ? "(n/a)" : r.getApprover();
-            String when = r.getApprovedAt() == null ? "(n/a)" : r.getApprovedAt().toString();
-            String note = r.getApprovalNotes() == null ? "" : r.getApprovalNotes();
-            String rej = r.getRejectionReason() == null ? "" : (" Rejection: " + r.getRejectionReason());
-            history.getItems().add(r.getId() + " - " + r.getKind() + " - " + r.getStatus() + " - by: " + who + " at: " + when + " " + note + rej);
-        }
-        setCenter(history);
-    }
-
     private void onApprove() {
         String sel = reqList.getSelectionModel().getSelectedItem();
         if (sel == null) { info.setText("Select request"); return; }
@@ -214,7 +202,6 @@ public class AdminView extends BorderPane {
             if (bt == approveBtn) {
                 java.util.Map<String,String> map = new java.util.HashMap<>();
                 // extract optional username/password if present
-                javafx.scene.Node n1 = grid.lookup(".text-field");
                 // safer: use typed fields defined above
                 javafx.scene.control.TextField uf = (javafx.scene.control.TextField) grid.getChildren().stream().filter(n-> n instanceof javafx.scene.control.TextField).findFirst().orElse(null);
                 String u = uf == null ? null : uf.getText();
