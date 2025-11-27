@@ -14,10 +14,8 @@ import java.util.Optional;
  * Handles CRUD operations for customers in H2 database
  */
 public class CustomerDAOImpl {
-    private Connection connection;
 
     public CustomerDAOImpl() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
     /**
@@ -38,7 +36,8 @@ public class CustomerDAOImpl {
                 "username, password, email, phone, company_name, registration_number) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customer.getCustomerID());
 
             if (customer instanceof IndividualCustomer) {
@@ -57,10 +56,10 @@ public class CustomerDAOImpl {
                 CompanyCustomer cc = (CompanyCustomer) customer;
                 pstmt.setString(2, null);
                 pstmt.setString(3, null);
-                pstmt.setString(4, null); // company has no 'national_id' column usage
+                pstmt.setString(4, null);
                 pstmt.setString(5, "COMPANY");
-                pstmt.setString(6, null); // username
-                pstmt.setString(7, null); // password
+                pstmt.setString(6, null);
+                pstmt.setString(7, null);
                 pstmt.setString(8, cc.getEmail());
                 pstmt.setString(9, cc.getPhone());
                 pstmt.setString(10, cc.getCompanyName());
@@ -85,7 +84,8 @@ public class CustomerDAOImpl {
         String sql = "UPDATE customers SET first_name=?, last_name=?, national_id=?, username=?, password=?, " +
                 "email=?, phone=?, company_name=?, registration_number=? WHERE customer_id=?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             if (customer instanceof IndividualCustomer) {
                 IndividualCustomer ic = (IndividualCustomer) customer;
                 pstmt.setString(1, ic.getFirstName());
@@ -128,7 +128,8 @@ public class CustomerDAOImpl {
 
         String sql = "SELECT * FROM customers WHERE customer_id = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -151,7 +152,8 @@ public class CustomerDAOImpl {
 
         String sql = "SELECT * FROM customers WHERE username = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
 
@@ -173,7 +175,8 @@ public class CustomerDAOImpl {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM customers ORDER BY creation_date DESC";
 
-        try (Statement stmt = connection.createStatement();
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -195,7 +198,8 @@ public class CustomerDAOImpl {
 
         String sql = "DELETE FROM customers WHERE customer_id = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;

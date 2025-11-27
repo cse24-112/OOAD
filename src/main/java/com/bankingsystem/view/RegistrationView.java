@@ -111,9 +111,13 @@ public class RegistrationView extends VBox {
             String bdet = businessDetails.getText();
             String dirs = directors.getText();
             String signs = signatories.getText();
+            @SuppressWarnings("unchecked")
             javafx.scene.control.ChoiceBox<String> industryBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#industryBox");
+            @SuppressWarnings("unchecked")
             javafx.scene.control.ChoiceBox<String> employeesBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#employeesBox");
+            @SuppressWarnings("unchecked")
             javafx.scene.control.ChoiceBox<String> revenueBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#revenueBox");
+            @SuppressWarnings("unchecked")
             javafx.scene.control.ChoiceBox<String> yearsBox = (javafx.scene.control.ChoiceBox<String>) this.lookup("#yearsBox");
             String industry = industryBox == null ? "Other" : String.valueOf(industryBox.getValue());
             String employeesRange = employeesBox == null ? "1-10" : String.valueOf(employeesBox.getValue());

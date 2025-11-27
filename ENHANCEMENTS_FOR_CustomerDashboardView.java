@@ -1,3 +1,0 @@
-/* File converted to placeholder to avoid being compiled.
-   Implementation guidance was integrated into CustomerDashboardView.java
-   and other source files. */

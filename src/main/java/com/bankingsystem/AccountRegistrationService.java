@@ -1,5 +1,7 @@
 package com.bankingsystem;
 
+import com.bankingsystem.persistence.AccountDAOImpl;
+import com.bankingsystem.persistence.CustomerDAOImpl;
 import java.util.UUID;
 
 /**
@@ -65,6 +67,21 @@ public class AccountRegistrationService {
         // Add customer to bank
         bank.registerCustomer(customer);
 
+        // Persist customer and account
+        try {
+            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+            customerDAO.saveCustomer(customer);
+        } catch (Exception e) {
+            System.err.println("Failed to persist new customer: " + e.getMessage());
+        }
+
+        try {
+            AccountDAOImpl accountDAO = new AccountDAOImpl();
+            accountDAO.saveAccount(account);
+        } catch (Exception e) {
+            System.err.println("Failed to persist new account: " + e.getMessage());
+        }
+
         return customer;
     }
 
@@ -82,7 +99,9 @@ public class AccountRegistrationService {
 
         if (companyName == null || companyName.trim().isEmpty()
             || registrationNumber == null || registrationNumber.trim().isEmpty()
-            || companyInfo == null) {
+            || companyInfo == null
+            || username == null || username.trim().isEmpty()
+            || password == null || password.trim().isEmpty()) {
             return null;
         }
 
@@ -92,7 +111,10 @@ public class AccountRegistrationService {
         // Create company customer
         CompanyCustomer customer = new CompanyCustomer(customerId, companyName, registrationNumber);
         customer.setCompanyRegistration(companyInfo);
-        customer.setNationalID(username); // Store username in nationalID for company lookup
+        
+        // Set username and password for login
+        customer.setUsername(username);
+        customer.setPassword(password);
 
         // Open Savings account by default for company
         Account account = bank.openAccount(customer, "Savings", 0.0);
@@ -102,6 +124,21 @@ public class AccountRegistrationService {
 
         // Add customer to bank
         bank.registerCustomer(customer);
+
+        // Persist customer and account
+        try {
+            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+            customerDAO.saveCustomer(customer);
+        } catch (Exception e) {
+            System.err.println("Failed to persist new company customer: " + e.getMessage());
+        }
+
+        try {
+            AccountDAOImpl accountDAO = new AccountDAOImpl();
+            accountDAO.saveAccount(account);
+        } catch (Exception e) {
+            System.err.println("Failed to persist new company account: " + e.getMessage());
+        }
 
         return customer;
     }

@@ -11,11 +11,9 @@ import java.util.Optional;
  * Handles CRUD operations for accounts in H2 database
  */
 public class AccountDAOImpl {
-    private Connection connection;
     private CustomerDAOImpl customerDAO;
 
     public AccountDAOImpl() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
         this.customerDAO = new CustomerDAOImpl();
     }
 
@@ -30,7 +28,8 @@ public class AccountDAOImpl {
                 "overdraft_allowed, approval_timestamp, approval_staff_username) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, account.getAccountNumber());
             pstmt.setString(2, account.getOwner().getCustomerID());
             pstmt.setString(3, account.getClass().getSimpleName());
@@ -86,7 +85,8 @@ public class AccountDAOImpl {
         String sql = "UPDATE accounts SET balance=?, status=?, approval_timestamp=?, " +
                 "approval_staff_username=? WHERE account_number=?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setDouble(1, account.getBalance());
             pstmt.setString(2, account.getStatus().toString());
             pstmt.setTimestamp(3, account.getApprovalDateTime() != null ?
@@ -104,6 +104,50 @@ public class AccountDAOImpl {
     }
 
     /**
+     * Assign or change the account number for an existing pending account row.
+     * This finds the pending account row for the given customer and updates its primary key to the provided new number.
+     */
+    public boolean assignAccountNumber(Account account, String newAccountNumber) {
+        if (account == null || newAccountNumber == null || newAccountNumber.trim().isEmpty()) return false;
+
+        String customerId = account.getOwner() != null ? account.getOwner().getCustomerID() : null;
+        if (customerId == null) return false;
+
+        String findSql = "SELECT account_number FROM accounts WHERE customer_id = ? AND status = ? ORDER BY date_opened DESC LIMIT 1";
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement findStmt = connection.prepareStatement(findSql)) {
+            findStmt.setString(1, customerId);
+            findStmt.setString(2, AccountStatus.PENDING.toString());
+            ResultSet rs = findStmt.executeQuery();
+            if (rs.next()) {
+                String oldAccountNumber = rs.getString("account_number");
+                // Update the account_number value in the DB
+                String updateSql = "UPDATE accounts SET account_number = ? WHERE account_number = ?";
+                try (PreparedStatement upd = connection.prepareStatement(updateSql)) {
+                    upd.setString(1, newAccountNumber);
+                    upd.setString(2, oldAccountNumber);
+                    int rows = upd.executeUpdate();
+                    if (rows > 0) {
+                        // reflectively update the in-memory object
+                        try {
+                            java.lang.reflect.Field f = Account.class.getDeclaredField("accountNumber");
+                            f.setAccessible(true);
+                            f.set(account, newAccountNumber);
+                        } catch (Exception ex) {
+                            // ignore reflective failures
+                        }
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error assigning account number: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Update account balance only
      */
     public boolean updateAccountBalance(String accountNumber, double newBalance) {
@@ -111,7 +155,8 @@ public class AccountDAOImpl {
 
         String sql = "UPDATE accounts SET balance=? WHERE account_number=?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setDouble(1, newBalance);
             pstmt.setString(2, accountNumber);
 
@@ -132,7 +177,8 @@ public class AccountDAOImpl {
 
         String sql = "SELECT * FROM accounts WHERE account_number = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             ResultSet rs = pstmt.executeQuery();
 
@@ -156,7 +202,8 @@ public class AccountDAOImpl {
         List<Account> accounts = new ArrayList<>();
         String sql = "SELECT * FROM accounts WHERE customer_id = ? ORDER BY date_opened DESC";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -181,7 +228,8 @@ public class AccountDAOImpl {
         List<Account> accounts = new ArrayList<>();
         String sql = "SELECT * FROM accounts ORDER BY date_opened DESC";
 
-        try (Statement stmt = connection.createStatement();
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -205,7 +253,8 @@ public class AccountDAOImpl {
         List<Account> accounts = new ArrayList<>();
         String sql = "SELECT * FROM accounts WHERE status = ? ORDER BY date_opened DESC";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
 
@@ -246,7 +295,8 @@ public class AccountDAOImpl {
         List<Account> accounts = new ArrayList<>();
         String sql = "SELECT * FROM accounts WHERE customer_id = ? AND status = ? ORDER BY date_opened DESC";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, customerId);
             pstmt.setString(2, status.toString());
             ResultSet rs = pstmt.executeQuery();
@@ -273,7 +323,8 @@ public class AccountDAOImpl {
 
         String sql = "DELETE FROM accounts WHERE account_number = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;

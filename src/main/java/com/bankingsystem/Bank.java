@@ -3,6 +3,7 @@ package com.bankingsystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.bankingsystem.persistence.CustomerDAOImpl;
 
 public class Bank {
     private String branchCode;
@@ -58,15 +59,56 @@ public class Bank {
             ic.setUsername(username);
             ic.setPassword(password);
             registerCustomer(ic);
+            
+            // Persist to database
+            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+            customerDAO.saveCustomer(ic);
+            
             req.setStatus(CustomerRegistrationRequest.Status.APPROVED);
             req.setApprover(staffUser);
             req.setApprovalNotes(staffNotes);
             req.setApprovedAt(java.time.LocalDateTime.now());
             return true;
         } else if (req.getKind().equalsIgnoreCase("company")) {
+            // require staff to set credentials for company too
+            if (username == null || username.isBlank() || password == null || password.isBlank()) {
+                req.setStatus(CustomerRegistrationRequest.Status.REJECTED);
+                req.setRejectionReason("Staff must set username and password before approval");
+                req.setApprover(staffUser);
+                req.setApprovalNotes(staffNotes);
+                req.setApprovedAt(java.time.LocalDateTime.now());
+                return false;
+            }
+            // prevent duplicate usernames
+            if (usernameExists(username)) {
+                req.setStatus(CustomerRegistrationRequest.Status.REJECTED);
+                req.setRejectionReason("Username already exists: " + username);
+                req.setApprover(staffUser);
+                req.setApprovalNotes(staffNotes);
+                req.setApprovedAt(java.time.LocalDateTime.now());
+                return false;
+            }
             String id = "CUST" + (1000 + customers.size());
             CompanyCustomer cc = new CompanyCustomer(id, req.getCompanyName(), req.getRegistrationNumber());
+            // Use reflection to set username and pin for company customer
+            try {
+                java.lang.reflect.Field usernameField = Customer.class.getDeclaredField("username");
+                usernameField.setAccessible(true);
+                usernameField.set(cc, username);
+                
+                java.lang.reflect.Field pinField = Customer.class.getDeclaredField("pin");
+                pinField.setAccessible(true);
+                pinField.set(cc, password);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                System.err.println("Failed to set company credentials: " + e.getMessage());
+                return false;
+            }
             registerCustomer(cc);
+            
+            // Persist to database
+            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+            customerDAO.saveCustomer(cc);
+            
             req.setStatus(CustomerRegistrationRequest.Status.APPROVED);
             req.setApprover(staffUser);
             req.setApprovalNotes(staffNotes);
@@ -103,10 +145,11 @@ public class Bank {
             // company customers can open accounts too; for simplicity allow savings and investment
             switch (type.toLowerCase()) {
                 case "savings":
-                    double fee = 50.0;
-                    if (initialDeposit < fee) return null;
+                    // For company accounts, waive the fee for initial registration
                     SavingsAccount sa = new SavingsAccount(customer, branchCode, 0.0005, 0.0);
-                    sa.deposit(initialDeposit - fee);
+                    if (initialDeposit > 0) {
+                        sa.deposit(initialDeposit);
+                    }
                     a = sa;
                     break;
                 case "investment":

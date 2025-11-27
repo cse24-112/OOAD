@@ -189,6 +189,17 @@ public class AdminView extends BorderPane {
             grid.add(new javafx.scene.control.Label("Business Details:"), 0, row); javafx.scene.control.TextArea bd = new javafx.scene.control.TextArea(req.getBusinessDetails()); bd.setPrefRowCount(3); bd.setWrapText(true); bd.setEditable(false); grid.add(bd, 1, row++);
             grid.add(new javafx.scene.control.Label("Directors:"), 0, row); javafx.scene.control.TextArea dta = new javafx.scene.control.TextArea(String.join("\n", req.getDirectors())); dta.setPrefRowCount(3); dta.setEditable(false); grid.add(dta, 1, row++);
             grid.add(new javafx.scene.control.Label("Signatories:"), 0, row); javafx.scene.control.TextArea sta = new javafx.scene.control.TextArea(String.join("\n", req.getSignatories())); sta.setPrefRowCount(2); sta.setEditable(false); grid.add(sta, 1, row++);
+            // allow staff to set username/password (required for company too)
+            javafx.scene.control.TextField userField = new javafx.scene.control.TextField(); userField.setPromptText("Set username (required)");
+            javafx.scene.control.PasswordField passField = new javafx.scene.control.PasswordField(); passField.setPromptText("Set password (required)");
+            grid.add(new javafx.scene.control.Label("Username:"), 0, row); grid.add(userField, 1, row++);
+            grid.add(new javafx.scene.control.Label("Password:"), 0, row); grid.add(passField, 1, row++);
+            // disable approve button until username & password provided
+            javafx.scene.Node approveNode = dlg.getDialogPane().lookupButton(approveBtn);
+            approveNode.disableProperty().bind(
+                    javafx.beans.binding.Bindings.createBooleanBinding(() -> userField.getText() == null || userField.getText().isBlank() || passField.getText() == null || passField.getText().isBlank(),
+                            userField.textProperty(), passField.textProperty())
+            );
         }
 
         // staff notes

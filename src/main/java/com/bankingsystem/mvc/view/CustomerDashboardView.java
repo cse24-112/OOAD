@@ -1,6 +1,7 @@
 package com.bankingsystem.mvc.view;
 
 import com.bankingsystem.*;
+import com.bankingsystem.mvc.utils.DashboardRefreshManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -30,6 +31,7 @@ public class CustomerDashboardView extends BorderPane {
     private final Stage primaryStage;
     private final Scene loginScene;
     private Button addAccountButton;
+    private DashboardRefreshManager refreshManager;
 
     public CustomerDashboardView(com.bankingsystem.Customer customer) {
         this(customer, null, null);
@@ -44,6 +46,9 @@ public class CustomerDashboardView extends BorderPane {
         
         initializeUI();
         loadAccountsAndCheckApproval();
+        
+        // Start auto-refresh
+        startAutoRefresh();
     }
 
     private void initializeUI() {
@@ -604,6 +609,26 @@ public class CustomerDashboardView extends BorderPane {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Start auto-refresh of customer dashboard
+     * Polls database every 5 seconds for approval updates
+     */
+    private void startAutoRefresh() {
+        refreshManager = new DashboardRefreshManager(() -> {
+            loadAccountsAndCheckApproval();
+        });
+        refreshManager.startAutoRefresh();
+    }
+
+    /**
+     * Stop auto-refresh of dashboard
+     */
+    public void stopAutoRefresh() {
+        if (refreshManager != null) {
+            refreshManager.stopAutoRefresh();
+        }
     }
 
     /**

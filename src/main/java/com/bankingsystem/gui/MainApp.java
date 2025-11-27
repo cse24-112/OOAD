@@ -5,6 +5,7 @@ import com.bankingsystem.mvc.view.LoginView;
 import com.bankingsystem.mvc.controller.LoginController;
 import com.bankingsystem.mvc.view.StaffDashboardView;
 import com.bankingsystem.mvc.view.CustomerDashboardView;
+import com.bankingsystem.persistence.DatabaseInitializer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -20,6 +21,9 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         // Initialize or load bank data
         initializeBank();
+        
+        // Initialize database with test data for staff dashboard
+        DatabaseInitializer.initializeWithTestData();
         
         // Create login view with callback to route to appropriate dashboard.
         // Use a scene holder to avoid referencing the view before it's initialized.

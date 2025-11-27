@@ -2,6 +2,8 @@ package com.bankingsystem.mvc.view;
 
 import com.bankingsystem.*;
 import com.bankingsystem.persistence.AccountDAOImpl;
+import com.bankingsystem.persistence.CustomerDAOImpl;
+import com.bankingsystem.mvc.utils.DashboardRefreshManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,6 +33,7 @@ public class StaffDashboardView extends BorderPane {
     private final Stage primaryStage;
     private final Scene loginScene;
     private final AccountDAOImpl accountDAO;
+    private DashboardRefreshManager refreshManager;
 
     public StaffDashboardView(Bank bank) {
         this(bank, null, null);
@@ -47,6 +50,9 @@ public class StaffDashboardView extends BorderPane {
         
         initializeUI();
         loadPendingAccounts();
+        
+        // Start auto-refresh
+        startAutoRefresh();
     }
 
     private void initializeUI() {
@@ -321,16 +327,14 @@ public class StaffDashboardView extends BorderPane {
                 return;
             }
             
-            // Manually set the account number (for demo purposes)
-            // In production, this would be done through a proper setter
-            try {
-                java.lang.reflect.Field field = Account.class.getDeclaredField("accountNumber");
-                field.setAccessible(true);
-                field.set(account, accountNumber.trim());
-            } catch (Exception e) {
-                // Fallback: just approve without manual assignment if reflection fails
+            // Assign account number in DB for the pending account row
+            com.bankingsystem.persistence.AccountDAOImpl accDao = new com.bankingsystem.persistence.AccountDAOImpl();
+            boolean assigned = accDao.assignAccountNumber(account, accountNumber.trim());
+            if (!assigned) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to assign account number in database");
+                return;
             }
-            
+
             // Approve account
             boolean success = AccountApprovalService.approveAccount(account, "staff1");
             if (success) {
@@ -558,12 +562,38 @@ public class StaffDashboardView extends BorderPane {
                         CompanyCustomer newCompany = new CompanyCustomer(custId, coName, coReg);
                         newCompany.setEmail(email);
                         newCompany.setPhone(phone);
+                        
+                        // Generate default credentials for company
+                        String defaultUsername = coName.toLowerCase().replace(" ", ".") + System.nanoTime() % 10000;
+                        String defaultPassword = "temppass123";
+                        
+                        // Set credentials using reflection (same as in Bank.java)
+                        try {
+                            java.lang.reflect.Field usernameField = Customer.class.getDeclaredField("username");
+                            usernameField.setAccessible(true);
+                            usernameField.set(newCompany, defaultUsername);
+                            
+                            java.lang.reflect.Field pinField = Customer.class.getDeclaredField("pin");
+                            pinField.setAccessible(true);
+                            pinField.set(newCompany, defaultPassword);
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            showAlert(Alert.AlertType.ERROR, "Error", "Failed to set company credentials: " + e.getMessage());
+                            return null;
+                        }
+                        
                         bank.registerCustomer(newCompany);
                         
-                        showAlert(Alert.AlertType.INFORMATION, "Success", 
-                            "Company customer created:\n" +
-                            "Customer ID: " + custId + "\n" +
-                            "Company: " + coName);
+                        // Persist to database
+                        CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+                        if (customerDAO.saveCustomer(newCompany)) {
+                            showAlert(Alert.AlertType.INFORMATION, "Success", 
+                                "Company customer created and saved:\n" +
+                                "Customer ID: " + custId + "\n" +
+                                "Company: " + coName + "\n" +
+                                "Username: " + defaultUsername);
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Error", "Customer created in memory but failed to save to database");
+                        }
                     }
                     
                     loadPendingAccounts();
@@ -603,6 +633,27 @@ public class StaffDashboardView extends BorderPane {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Start auto-refresh of dashboard data
+     * Polls database every 5 seconds for new accounts
+     */
+    private void startAutoRefresh() {
+        refreshManager = new DashboardRefreshManager(() -> {
+            loadPendingAccounts();
+            loadApprovedAccounts();
+        });
+        refreshManager.startAutoRefresh();
+    }
+
+    /**
+     * Stop auto-refresh of dashboard data
+     */
+    public void stopAutoRefresh() {
+        if (refreshManager != null) {
+            refreshManager.stopAutoRefresh();
+        }
     }
 
     /**

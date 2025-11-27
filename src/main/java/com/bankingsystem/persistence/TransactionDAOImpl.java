@@ -10,10 +10,8 @@ import java.util.List;
  * Handles CRUD operations for transactions in H2 database
  */
 public class TransactionDAOImpl {
-    private Connection connection;
 
     public TransactionDAOImpl() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
     /**
@@ -26,7 +24,8 @@ public class TransactionDAOImpl {
                 "balance_after, description, transaction_timestamp) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             String transactionId = "TXN" + System.nanoTime();
             pstmt.setString(1, transactionId);
             pstmt.setString(2, accountNumber);
@@ -54,7 +53,8 @@ public class TransactionDAOImpl {
         List<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transactions WHERE account_number = ? ORDER BY transaction_timestamp DESC";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             ResultSet rs = pstmt.executeQuery();
 
@@ -79,7 +79,8 @@ public class TransactionDAOImpl {
         List<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transactions ORDER BY transaction_timestamp DESC";
 
-        try (Statement stmt = connection.createStatement();
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -104,7 +105,8 @@ public class TransactionDAOImpl {
 
         String sql = "SELECT COUNT(*) FROM transactions WHERE account_number = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             ResultSet rs = pstmt.executeQuery();
 
@@ -127,7 +129,8 @@ public class TransactionDAOImpl {
 
         String sql = "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE account_number = ? AND transaction_type = 'TRANSFER'";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             ResultSet rs = pstmt.executeQuery();
 
@@ -150,7 +153,8 @@ public class TransactionDAOImpl {
 
         String sql = "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE account_number = ? AND transaction_type = 'INTEREST'";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, accountNumber);
             ResultSet rs = pstmt.executeQuery();
 

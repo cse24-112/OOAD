@@ -2,6 +2,7 @@ C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\jav
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\model\Customer.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\controller\StaffController.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\view\NewAccountRegistrationView.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\persistence\DatabaseMigrationManager.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\dao\CustomerDAO.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\dao\TransactionDAO.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\view\TransferView.java
@@ -13,6 +14,7 @@ C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\jav
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\CompanyCustomer.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\IndividualCustomer.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\model\Staff.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\utils\DashboardRefreshManager.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\view\ViewBalanceView.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\view\TransactionHistoryView.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\controller\AccountController.java
@@ -31,6 +33,8 @@ C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\jav
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\persistence\TransactionDAOImpl.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\view\DashboardView.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\model\InvestmentAccount.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\persistence\DatabaseInitializer.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\tools\IntegrationRunner.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\AccountRegistrationService.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\InvestmentAccount.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\mvc\model\Account.java
@@ -77,4 +81,6 @@ C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\jav
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\controller\RegistrationController.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\Withdrawable.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\dao\CustomerDAOInterface.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\persistence\ConnectionRetryManager.java
 C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\EmploymentInfo.java
+C:\Users\thoma\OneDrive - Botswana Accountancy College\Desktop\OOAD\src\main\java\com\bankingsystem\persistence\TransactionManager.java
